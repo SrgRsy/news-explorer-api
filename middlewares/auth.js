@@ -11,7 +11,6 @@ module.exports = (req, res, next) => {
   const extractBearerToken = (header) => header.replace('Bearer ', '');
   const { authorization } = req.headers;
   // eslint-disable-next-line no-console
-  console.log(authorization);
   if (!authorization || !authorization.startsWith('Bearer ')) {
     return handleAuthError(res);
   }
