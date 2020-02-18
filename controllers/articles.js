@@ -8,13 +8,14 @@ module.exports.createArticle = (req, res, next) => {
   Article.create({
     keyword: req.body.keyword,
     title: req.body.title,
-    text: req.user.text,
+    text: req.body.text,
     date: req.body.date,
     link: req.body.link,
-    source: req.user.source,
-    image: req.user.image,
+    source: req.body.source,
+    image: req.body.image,
+    owner: req.user._id,
   })
-    .then((article) => res.send({ data: article }))
+    .then(() => res.send({ message: 'Статья добавлена' }))
     .catch(next);
 };
 
@@ -23,17 +24,16 @@ module.exports.deleteArticle = (req, res, next) => {
   Article.findById(req.params.articleId)
     .then((article) => {
       if (article === null) {
-        throw new NotFoundError('Статься не найдена');
+        throw new NotFoundError('Статья не найдена');
       }
       if (article.owner.toString() === req.user._id) {
         Article.findByIdAndRemove(req.params.articleId)
-          .then((articleRemove) => res.send({ remove: articleRemove }))
+          .then(() => res.send({ message: 'Статья удалена' }))
           .catch(next);
       } else {
         next(new NotEnoughRight('Недостаточно прав'));
       }
     })
-    .then((article) => res.send({ data: article }))
     .catch(next);
 };
 

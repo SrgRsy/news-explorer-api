@@ -2,16 +2,14 @@
 const express = require('express');
 require('dotenv').config();
 
+
 const app = express();
-const { PORT = 3002 } = process.env;
+const { PORT = 3002, MONGO_URL, NODE_ENV } = process.env;
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const { errors } = require('celebrate');
-const auth = require('./middlewares/auth');
-const articles = require('./routes/articles');
-const users = require('./routes/users');
-const authoriz = require('./routes/authoriz');
+const publicRout = require('./routes/index');
 
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 
@@ -20,7 +18,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // подключаемся к серверу монго
-mongoose.connect('mongodb://localhost:27017/mydb', {
+mongoose.connect(NODE_ENV === 'production' ? MONGO_URL : 'mongodb://localhost:27017/mydb', {
   useNewUrlParser: true,
   useCreateIndex: true,
   useFindAndModify: false,
@@ -34,11 +32,8 @@ app.get('/crash-test', () => {
   }, 0);
 });
 
-app.use('/', authoriz);
-app.use('/users', auth, users);
-app.use('/articles', auth, articles);
+app.use(publicRout);
 app.use(errors());
-
 app.use(errorLogger);
 
 app.use((err, req, res, next) => {
