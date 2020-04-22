@@ -6,6 +6,20 @@ const articleSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  source: {
+    type: String,
+    required: true,
+  },
+  image: {
+    type: String,
+    validate: {
+      validator(str) {
+        return validator.isURL(str);
+      },
+      message: 'Эта строка должна быть URL',
+    },
+    required: true,
+  },
   title: {
     type: String,
     required: true,
