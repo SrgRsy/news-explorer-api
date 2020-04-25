@@ -15,7 +15,7 @@ module.exports.createArticle = (req, res, next) => {
     image: req.body.image,
     owner: req.user._id,
   })
-    .then(() => res.send({ message: 'Статья добавлена' }))
+    .then((res) => res.status(201).send({ message: 'Статья добавлена' }))
     .catch(next);
 };
 
@@ -28,7 +28,7 @@ module.exports.deleteArticle = (req, res, next) => {
       }
       if (article.owner.toString() === req.user._id) {
         Article.findByIdAndRemove(req.params.articleId)
-          .then(() => res.send({ message: 'Статья удалена' }))
+          .then((res) => res.status(200).send({ message: 'Статья удалена' }))
           .catch(next);
       } else {
         next(new NotEnoughRight('Недостаточно прав'));
@@ -40,6 +40,6 @@ module.exports.deleteArticle = (req, res, next) => {
 
 module.exports.getArticle = (req, res, next) => {
   Article.find({})
-    .then((article) => res.send({ data: article }))
+    .then((article) => res.status(200).send({ data: article }))
     .catch(next);
 };
