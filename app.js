@@ -5,6 +5,7 @@ require('dotenv').config();
 
 const app = express();
 const { PORT = 3002, MONGO_URL, NODE_ENV } = process.env;
+var cors = require('cors');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
@@ -15,6 +16,7 @@ const MONGO_ADRESS = NODE_ENV === 'production' ? MONGO_URL : 'mongodb://localhos
 
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 
+app.use(cors());
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -33,6 +35,14 @@ app.get('/crash-test', () => {
   setTimeout(() => {
     throw new Error('Сервер сейчас упадёт');
   }, 0);
+});
+
+app.use(function(req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  res.header('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE');
+
+  next();
 });
 
 app.use(publicRout);
